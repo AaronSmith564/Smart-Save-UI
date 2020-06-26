@@ -1,5 +1,6 @@
 import logging
 import os
+import maya.cmds as cmds
 
 import pymel.core as pmc
 from   pymel.core.system import Path
@@ -32,11 +33,20 @@ class SceneFile(object):
     ext (str, optional): extension defaults to "ma"
     """
     def __init__(self, dir='', descriptor='main', version=1, ext="ma"):
-        self._dir = Path(dir)
-        self.descriptor = descriptor
-        self.version = version
-        self.ext = ext
-
+        FilePath = cmds.file(q=True, sn=True)
+        if(FilePath == ""):
+            self._dir = Path(dir)
+            self.descriptor = descriptor
+            self.version = version
+            self.ext = ext
+        else:
+            parts = os.path.split(FilePath)
+            self._dir = parts[0]
+            Name = parts[1].split('_v')
+            self.descriptor = Name[0]
+            Split2 = Name[1].split('.')
+            self.version = int(Split2[0])
+            self.ext = Split2[1]
     @property
     def dir(self):
         return self._dir
