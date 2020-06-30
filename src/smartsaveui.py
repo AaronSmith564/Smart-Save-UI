@@ -49,6 +49,7 @@ class SimpleUI(QtWidgets.QDialog):
         self.ext_le = QtWidgets.QLineEdit()  # widget that takes an input with ma as default
         self.ext_le.setText(self.scene.ext)
         self.save_btn = QtWidgets.QPushButton("Save")
+        self.save_incr_btn = QtWidgets.QPushButton("Save and Increment")
         self.cancel_btn = QtWidgets.QPushButton("Cancel")
 
     def create_layout(self):
@@ -72,6 +73,7 @@ class SimpleUI(QtWidgets.QDialog):
         self.ext_lay.addWidget(self.ext_le)
 
         self.bottom_btn_lay = QtWidgets.QHBoxLayout()
+        self.bottom_btn_lay.addWidget(self.save_incr_btn)
         self.bottom_btn_lay.addWidget(self.save_btn)
         self.bottom_btn_lay.addWidget(self.cancel_btn)
 
@@ -89,8 +91,29 @@ class SimpleUI(QtWidgets.QDialog):
         """connects our widgit signals to slots"""
         #connects the bool output of a button to a object attribute
         self.cancel_btn.clicked.connect(self.cancel)
+        self.save_btn.clicked.connect(self.save)
+        self.save_incr_btn.clicked.connect(self.save_and_increment)
+
+    def _populate_scenefile_properties(self):
+        """populates the scenefile objects with values found in the UI"""
+        self.scene.dir = self.dir_le.text() # pulls the input from the line
+        self.scene.descriptor = self.descriptor_le.text()
+        self.scene.version = self.version_spinbox.value()
+        self.scene.ext = self.ext_le.text()
+
+    @QtCore.Slot()
+    def save(self):
+        """saves the dialog"""
+        self._populate_scenefile_properties()
+        self.scene.save()
 
     @QtCore.Slot()
     def cancel(self):
         """Quits the dialog"""
         self.close()
+
+    @QtCore.Slot()
+    def save_and_increment(self):
+        """increments and saves the dialog"""
+        self._populate_scenefile_properties()
+        self.scene.increment_and_save()

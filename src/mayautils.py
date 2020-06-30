@@ -80,14 +80,17 @@ class SceneFile(object):
             :obj:'Path': The path to the scene file if successful, None, otherwise
             """
         try:
-            pmc.system.saveAs(self.path())
+            Path = self.dir+ "\\" + self.descriptor + '_v0' + str(self.version) + '.' + self.ext
+            pmc.system.saveAs(Path)
         except RuntimeError:
             log.warning("Missing directories. creating directories")
             self.dir.makedirs_p()
-            pmc.system.saveAs(self.path())
+            Path = self.dir + "\\" + self.descriptor + '_v0' + str(self.version) + '.' + self.ext
+            pmc.system.saveAs(Path)
 
     def increment_and_save(self):
-        CurrentVersion = 1
+        """finds the latest version on disk and increments before saving"""
+        CurrentVersion = self.version
         for f in self.dir.files('*.ma'):
             parts = os.path.split(f)
             Directory = parts[0]
@@ -96,8 +99,9 @@ class SceneFile(object):
             Split2 = Name[1].split('.')
             Version = int(Split2[0])
             Extension = Split2[1]
-            if CurrentVersion < Version:
-                CurrentVersion = Version
+            if(self.descriptor == Descriptor):
+                if CurrentVersion < Version:
+                    CurrentVersion = Version
         CurrentVersion = CurrentVersion + 1
-        Path = Directory + "\\" + Descriptor + '_v0' + str(CurrentVersion) + '.' + Extension
+        Path = self.dir + "\\" + self.descriptor + '_v0' + str(CurrentVersion) + '.' + self.ext
         pmc.system.saveAs(Path)
