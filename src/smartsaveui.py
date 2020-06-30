@@ -2,6 +2,7 @@ import maya.OpenMayaUI as omui
 from PySide2 import QtWidgets, QtCore
 from shiboken2 import wrapInstance
 
+
 import mayautils
 
 def maya_main_window():
@@ -90,6 +91,7 @@ class SimpleUI(QtWidgets.QDialog):
     def create_connections(self):
         """connects our widgit signals to slots"""
         #connects the bool output of a button to a object attribute
+        self.browse_btn.clicked.connect(self.browse)
         self.cancel_btn.clicked.connect(self.cancel)
         self.save_btn.clicked.connect(self.save)
         self.save_incr_btn.clicked.connect(self.save_and_increment)
@@ -111,6 +113,14 @@ class SimpleUI(QtWidgets.QDialog):
     def cancel(self):
         """Quits the dialog"""
         self.close()
+
+    @QtCore.Slot()
+    def browse(self):
+        """Opens the file browser"""
+        NewDirectory = QtWidgets.QFileDialog.getExistingDirectory()
+        self.scene.dir = NewDirectory
+        self.dir_le.setText(self.scene.dir)
+
 
     @QtCore.Slot()
     def save_and_increment(self):
